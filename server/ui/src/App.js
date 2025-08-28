@@ -4,9 +4,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-import './App.css';
-
+import Agents from './components/Agents';
 import Alerts from './components/Alerts';
+import './App.css';
 
 function App() {
   return (
