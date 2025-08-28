@@ -1,0 +1,13 @@
+[Unit]
+Description=AntarMon Server
+After=network.target
+
+[Service]
+User=antarmon
+Group=antarmon
+WorkingDirectory=/opt/antarmon-server
+ExecStart=/opt/antarmon-server/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker --certfile=/opt/antarmon-server/antarmon.crt --keyfile=/opt/antarmon-server/antarmon.key main:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

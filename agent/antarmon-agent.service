@@ -1,0 +1,13 @@
+[Unit]
+Description=AntarMon Agent
+After=network.target
+
+[Service]
+User=antarmon-agent
+Group=antarmon-agent
+WorkingDirectory=/opt/antarmon-agent
+ExecStart=/opt/antarmon-agent/venv/bin/python agent.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,1 +1,18 @@
-/GEMINI.md
+# Python
+__pycache__/
+*.pyc
+venv/
+*.db
+dist/
+build/
+*.spec
+
+# Node.js
+node_modules/
+
+# Project files
+GEMINI.md
+SUMMARY.md
+
+# Agent config
+agent/config.ini
