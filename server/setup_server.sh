@@ -14,6 +14,11 @@ if ! id -u antarmon > /dev/null 2>&1; then
     useradd -r -s /bin/false antarmon
 fi
 
+# Install dependencies
+echo "Installing system packages..."
+apt update
+apt install -y python3-venv nodejs npm
+
 # Create the installation directory
 APP_DIR="/opt/antarmon-server"
 echo "Creating installation directory ${APP_DIR}..."
