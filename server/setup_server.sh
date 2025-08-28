@@ -35,6 +35,13 @@ python3 -m venv ${APP_DIR}/venv
 source ${APP_DIR}/venv/bin/activate
 ${APP_DIR}/venv/bin/pip install -r ${APP_DIR}/requirements.txt
 
+# Install UI dependencies and build for production
+echo "Building the frontend UI..."
+cd ${APP_DIR}/ui
+npm install
+npm run build
+cd ${APP_DIR}
+
 # Set ownership of the application directory
 echo "Setting ownership..."
 chown -R antarmon:antarmon ${APP_DIR}

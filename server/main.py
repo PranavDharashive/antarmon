@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 import database as db
@@ -8,6 +9,8 @@ import auth
 import secrets
 
 app = FastAPI()
+
+api_router = FastAPI()
 
 # Initialize the database on startup
 db.initialize_database()
@@ -39,7 +42,7 @@ async def verify_api_key(x_api_key: str = Header(...), conn: sqlite3.Connection 
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return agent
 
-@app.post("/register")
+@api_router.post("/register")
 def register_user(user: User, conn: sqlite3.Connection = Depends(get_db_connection)):
     db_user = db.get_user_by_email(conn, user.email)
     if db_user:
@@ -48,7 +51,7 @@ def register_user(user: User, conn: sqlite3.Connection = Depends(get_db_connecti
     db.create_user(conn, (user.email, hashed_password))
     return {"message": "User created successfully"}
 
-@app.post("/token")
+@api_router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), conn: sqlite3.Connection = Depends(get_db_connection)):
     user = db.get_user_by_email(conn, form_data.username)
     if not user or not auth.verify_password(form_data.password, user[2]):
@@ -62,11 +65,11 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), con
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/")
+@api_router.get("/")
 def read_root():
     return {"message": "AntarMon Server is running"}
 
-@app.post("/metrics")
+@api_router.post("/metrics")
 def receive_metrics(metrics: Metrics, agent: Agent = Depends(verify_api_key), conn: sqlite3.Connection = Depends(get_db_connection)):
     metric_data = metrics.metrics
     db.insert_metric(conn, (metric_data['hostname'], metric_data['cpu_percent'], metric_data['memory_percent'], metric_data['disk_percent']))
@@ -81,38 +84,41 @@ def receive_metrics(metrics: Metrics, agent: Agent = Depends(verify_api_key), co
 
     return {"status": "success", "data_received": metrics.dict()}
 
-@app.get("/metrics/all")
+@api_router.get("/metrics/all")
 def get_all_metrics(conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     rows = db.get_all_metrics(conn)
     return {"metrics": rows}
 
-@app.post("/agents")
+@api_router.post("/agents")
 def register_agent(agent: Agent, conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     api_key = secrets.token_hex(32)
     user = db.get_user_by_email(conn, current_user)
     db.create_agent(conn, (agent.name, api_key, user[0]))
     return {"agent_name": agent.name, "api_key": api_key}
 
-@app.get("/agents")
+@api_router.get("/agents")
 def get_agents(conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     user = db.get_user_by_email(conn, current_user)
     agents = db.get_agents_by_user_id(conn, user[0])
     return {"agents": agents}
 
-@app.post("/alerts")
+@api_outer.post("/alerts")
 def create_alert(alert: Alert, conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     user = db.get_user_by_email(conn, current_user)
     db.create_alert(conn, (alert.metric_name, alert.threshold, user[0]))
     return {"message": "Alert created successfully"}
 
-@app.get("/alerts")
+@api_router.get("/alerts")
 def get_alerts(conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     user = db.get_user_by_email(conn, current_user)
     alerts = db.get_alerts_by_user_id(conn, user[0])
     return {"alerts": alerts}
 
-@app.delete("/alerts/{alert_id}")
+@api_router.delete("/alerts/{alert_id}")
 def delete_alert(alert_id: int, conn: sqlite3.Connection = Depends(get_db_connection), current_user: str = Depends(auth.get_current_user)):
     # In a real app, you should verify that the user owns the alert before deleting it
     db.delete_alert(conn, alert_id)
     return {"message": "Alert deleted successfully"}
+
+app.mount("/api", api_router)
+app.mount("/", StaticFiles(directory="ui/build", html=True), name="ui")

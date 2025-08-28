@@ -11,7 +11,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/register', { email, password });
+      await axios.post('/api/register', { email, password });
       navigate('/login');
     } catch (error) {
       setError('Failed to register. Email may already be in use.');

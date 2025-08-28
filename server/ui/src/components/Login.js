@@ -11,7 +11,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/token', new URLSearchParams({
+      const response = await axios.post('/api/token', new URLSearchParams({
         username: email,
         password: password,
       }));

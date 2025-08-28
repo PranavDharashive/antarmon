@@ -17,7 +17,7 @@ function Dashboard() {
           return;
         }
 
-        const response = await axios.get('/metrics/all', {
+        const response = await axios.get('/api/metrics/all', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMetrics(response.data.metrics);

@@ -11,7 +11,7 @@ function Agents() {
     const fetchAgents = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/agents', {
+        const response = await axios.get('/api/agents', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAgents(response.data.agents);
@@ -27,13 +27,13 @@ function Agents() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('/agents', { name: agentName }, {
+      const response = await axios.post('/api/agents', { name: agentName }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNewApiKey(response.data.api_key);
       setAgentName('');
       // Refresh the agents list
-      const updatedAgents = await axios.get('/agents', {
+      const updatedAgents = await axios.get('/api/agents', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAgents(updatedAgents.data.agents);

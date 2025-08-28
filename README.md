@@ -2,7 +2,48 @@
 
 AntarMon (Antar = Insight, Mon = Monitor) is a lightweight, cross-platform monitoring utility built with an agent–server architecture. It is designed to provide deep insights into VM/system health while being easy to install, secure by default, and minimal in resource usage.
 
-## Prerequisites
+## One-Command Installation
+
+For a more streamlined setup, you can use the provided release and installation scripts.
+
+### 1. Create the Release Packages
+
+First, run the `create_release.sh` script to bundle the server and agent into distributable packages.
+
+```bash
+chmod +x create_release.sh
+./create_release.sh
+```
+
+This will create `antarmon-server.tar.gz` and `antarmon-agent.tar.gz` in a `release` directory.
+
+### 2. Host the Release Packages
+
+Upload the `.tar.gz` files to a location where your target machines can access them via a URL (e.g., a web server, GitHub Releases).
+
+### 3. Update the Installer Scripts
+
+Edit the `RELEASE_URL` variable in `install_server.sh` and `install_agent.sh` to point to the public URLs of your hosted packages.
+
+### 4. Run the Installer
+
+On your target server or agent machine, you can now run the installation with a single command.
+
+**For the server:**
+```bash
+curl -sL https://your-url.com/install_server.sh | sudo bash
+```
+
+**For the agent:**
+```bash
+curl -sL https://your-url.com/install_agent.sh | sudo bash
+```
+
+## Manual Setup
+
+If you prefer to set up the components manually, follow the instructions below.
+
+### Prerequisites
 
 ### Hardware Requirements
 

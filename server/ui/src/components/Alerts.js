@@ -10,7 +10,7 @@ function Alerts() {
   const fetchAlerts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/alerts', {
+      const response = await axios.get('/api/alerts', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAlerts(response.data.alerts);
@@ -27,7 +27,7 @@ function Alerts() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('/alerts', { metric_name: metricName, threshold: parseFloat(threshold) }, {
+      await axios.post('/api/alerts', { metric_name: metricName, threshold: parseFloat(threshold) }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMetricName('cpu_percent');
@@ -41,7 +41,7 @@ function Alerts() {
   const handleDeleteAlert = async (alertId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/alerts/${alertId}`, {
+      await axios.delete(`/api/alerts/${alertId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchAlerts(); // Refresh the alerts list
